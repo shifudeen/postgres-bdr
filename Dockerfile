@@ -56,7 +56,7 @@ RUN apt-get update && \
 RUN mv -v /usr/share/postgresql/$POSTGRES_VERSION/postgresql.conf.sample /usr/share/postgresql/ && \
     ln -sv ../postgresql.conf.sample /usr/share/postgresql/$POSTGRES_VERSION/  && \
     sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" /usr/share/postgresql/postgresql.conf.sample
-RUN mkdir -p /var/run/postgresql && chown -R postgres /var/run/postgresql
+RUN mkdir -p /var/run/postgresql && chown -R postgres /var/run/postgresql && mkdir -p /docker-entrypoint-initdb.d
 
 ENV PATH /usr/lib/postgresql/$POSTGRES_VERSION/bin:$PATH
 ENV PGDATA /var/lib/postgresql/data
