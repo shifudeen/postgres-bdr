@@ -1,15 +1,15 @@
-FROM ubuntu:trusty
+FROM ubuntu:xenial
 MAINTAINER Saifuddin Nair <saifuddin@abyres.net>
 # set noninteractive mode
 # DUMB-INIT LATEST: https://github.com/Yelp/dumb-init/releases/
 # GOSU LATEST:      https://github.com/tianon/gosu/releases/
 
 # explicitly set user/group IDs
-RUN groupadd -r postgres --gid=999 && useradd -r -M -d /var/lib/postgresql/data -g postgres --uid=999 postgres
+RUN groupadd -r postgres --gid=26 && useradd -r -M -d /var/lib/postgresql/data -g postgres --uid=26 postgres
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    DUMB_INIT_VERSION=1.0.0 \
-    GOSU_VERSION=1.7
+    DUMB_INIT_VERSION=1.1.3 \
+    GOSU_VERSION=1.9
 
 RUN apt-get update && \
     apt-get upgrade -y && \

@@ -48,12 +48,27 @@ if [ "$1" = 'postgres' ]; then
 		{ echo; echo "shared_preload_libraries = 'bdr'";
 			echo "wal_level = 'logical'";
 			echo "track_commit_timestamp = on";
-			echo "max_wal_senders = 10";
-			echo "max_replication_slots = 10";
-			echo "max_worker_processes = 10";
+			echo "max_wal_senders = 50";
+			echo "max_replication_slots = 50";
+			echo "max_worker_processes = 50";
 			echo "default_sequenceam = 'bdr'";
+            echo "log_destination = 'stderr'";
+            echo "logging_collector = on";
+            echo "log_directory = 'pg_log'";
+            echo "log_filename = 'postgresql-%a.log'";
+            echo "log_truncate_on_rotation = on";
+            echo "log_rotation_age = 1d";
+            echo "log_rotation_size = 0";
+            echo "log_min_duration_statement = 0";
+            echo "log_checkpoints = on";
+            echo "log_connections = on";
+            echo "log_disconnections = on";
+            echo "log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h'";
+            echo "log_lock_waits = on";
+            echo "log_timezone = 'Asia/Kuala_Lumpur'";
+            echo "log_autovacuum_min_duration = 0";
 		} >> "$PGDATA"/postgresql.conf
-		pgtune -T OLTP -i /var/lib/postgresql/data/postgresql.conf -o /var/lib/postgresql/data/postgresql.conf
+
 		# internal start of server in order to allow set-up using psql-client		
 		# does not listen on external TCP/IP and waits until start finishes
 		gosu postgres pg_ctl -D "$PGDATA" \
@@ -102,7 +117,20 @@ if [ "$1" = 'postgres' ]; then
 		echo
 	fi
 
-	exec gosu postgres "$@"
+    #Performance Tuning using PGTUNE
+    if [ ! "$POSTGRES_OPERATION_TYPE" ]; then
+        POSTGRES_OPERATION_TYPE="OLTP"
+    fi
+
+    if [ "$POSTGRES_MAX_MEMORY" ]; then
+        POSTGRES_MAX_MEMORY=$(($POSTGRES_MAX_MEMORY * 1024 * 1024 * 1024))
+        gosu postgres pgtune -M $POSTGRES_MAX_MEMORY -T $POSTGRES_OPERATION_TYPE -i /var/lib/postgresql/data/postgresql.conf -o /var/lib/postgresql/data/postgresql.conf
+    else
+        gosu postgres pgtune -T $POSTGRES_OPERATION_TYPE -i /var/lib/postgresql/data/postgresql.conf -o /var/lib/postgresql/data/postgresql.conf
+    fi
+    #Done pgtune.. Now starting
+
+    exec gosu postgres "$@"
 fi
 
 exec "$@"
