@@ -48,9 +48,17 @@ RUN apt-get update && \
         postgresql-bdr-${POSTGRES_VERSION} \
         postgresql-bdr-client-${POSTGRES_VERSION} \
         postgresql-bdr-contrib-${POSTGRES_VERSION} \
-        postgresql-bdr-${POSTGRES_VERSION}-bdr-plugin \
-        pgtune && \
-    rm -rf /var/lib/apt/lists/*
+        postgresql-bdr-${POSTGRES_VERSION}-bdr-plugin && \
+    rm -rf /var/lib/apt/lists/* && \
+    wget "http://mirrors.kernel.org/ubuntu/pool/universe/p/pgtune/pgtune_0.9.3-2_all.deb" && \
+    dpkg -i "pgtune_0.9.3-2_all.deb" && \
+    rm -f "pgtune_0.9.3-2_all.deb"
+
+# update pgtune with latest config
+COPY pgtune /usr/bin/pgtune
+COPY pg_settings-9.0-64 /usr/share/pgtune/
+COPY pg_settings-9.1-64 /usr/share/pgtune/
+RUN chmod +x /usr/bin/pgtune    
 
 # make the sample config easier to munge (and "correct by default")
 RUN mv -v /usr/share/postgresql/$POSTGRES_VERSION/postgresql.conf.sample /usr/share/postgresql/ && \
