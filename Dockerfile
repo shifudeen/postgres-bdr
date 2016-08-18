@@ -13,7 +13,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y build-essential software-properties-common curl unzip wget dnsutils ca-certificates && \
+    apt-get install -y build-essential software-properties-common curl unzip wget dnsutils ca-certificates python python3 && \
     apt-get clean -y && \
     apt-get --purge autoremove -y && \
     rm -rf /tmp/* && \
@@ -49,16 +49,17 @@ RUN apt-get update && \
         postgresql-bdr-client-${POSTGRES_VERSION} \
         postgresql-bdr-contrib-${POSTGRES_VERSION} \
         postgresql-bdr-${POSTGRES_VERSION}-bdr-plugin && \
-    rm -rf /var/lib/apt/lists/* && \
-    wget "http://mirrors.kernel.org/ubuntu/pool/universe/p/pgtune/pgtune_0.9.3-2_all.deb" && \
-    dpkg -i "pgtune_0.9.3-2_all.deb" && \
-    rm -f "pgtune_0.9.3-2_all.deb"
+    rm -rf /var/lib/apt/lists/* && 
 
 # update pgtune with latest config
 COPY pgtune /usr/bin/pgtune
+RUN chmod +x /usr/bin/pgtune && mkdir -p /usr/share/pgtune    
+COPY pg_settings-8.4-32 /usr/share/pgtune/
+COPY pg_settings-8.4-64 /usr/share/pgtune/
 COPY pg_settings-9.0-64 /usr/share/pgtune/
 COPY pg_settings-9.1-64 /usr/share/pgtune/
-RUN chmod +x /usr/bin/pgtune    
+COPY pg_settings-9.3-64 /usr/share/pgtune/
+COPY pg_settings-9.4-64 /usr/share/pgtune/
 
 # make the sample config easier to munge (and "correct by default")
 RUN mv -v /usr/share/postgresql/$POSTGRES_VERSION/postgresql.conf.sample /usr/share/postgresql/ && \
