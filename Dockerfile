@@ -12,7 +12,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     GOSU_VERSION=1.9
 
 RUN apt-get update && \
-    apt-get --purge remove apparmor apparmor-utils libapparmor-perl libapparmor1 && \
     apt-get upgrade -y && \
     apt-get install -y build-essential software-properties-common curl unzip wget dnsutils ca-certificates python python3 && \
     apt-get clean -y && \
