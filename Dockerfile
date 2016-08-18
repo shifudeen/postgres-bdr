@@ -5,7 +5,7 @@ MAINTAINER Saifuddin Nair <saifuddin@abyres.net>
 # GOSU LATEST:      https://github.com/tianon/gosu/releases/
 
 # explicitly set user/group IDs
-RUN groupadd -r postgres --gid=26 && useradd -r -M -d /var/lib/postgresql/data -g postgres --uid=26 postgres
+RUN groupadd -r postgres --gid=999 && useradd -r -M -d /var/lib/postgresql/data -g postgres --uid=999 postgres
 
 ENV DEBIAN_FRONTEND=noninteractive \
     DUMB_INIT_VERSION=1.1.3 \
