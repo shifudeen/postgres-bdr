@@ -128,7 +128,12 @@ if [ "$1" = 'postgres' ]; then
     else
         gosu postgres pgtune -T $POSTGRES_OPERATION_TYPE -i /var/lib/postgresql/data/postgresql.conf -o /var/lib/postgresql/data/postgresql.conf
     fi
-    #Done pgtune.. Now starting
+    
+    if [ ! "$POSTGRES_LOG_COLLECT" ]; then
+        POSTGRES_LOG_COLLECT="on"
+    fi
+
+    sed -i "s/logging_collector.*/logging_collector = ${POSTGRES_LOG_COLLECT}/g" /var/lib/postgresql/data/postgresql.conf
 
     exec gosu postgres "$@"
 fi
